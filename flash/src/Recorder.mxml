@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" initialize="application1_initializeHandler(event)" width="155" height="124" alpha="0" usePreloader="false" error="application1_errorHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.audio.format.WAVWriter;
+			import com.adobe.serialization.json.JSON;
+			import flash.display.Sprite;
+			import flash.events.ErrorEvent;
+			import flash.events.SampleDataEvent;
+			import flash.external.ExternalInterface;
+			import flash.media.Microphone;
+			import flash.media.Sound;
+			import flash.media.SoundChannel;
+			import flash.system.Capabilities;
+			import flash.utils.ByteArray;
+			
+			import fr.kikko.lab.ShineMP3Encoder;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.FlexEvent;
+			
+			import ru.inspirit.net.MultipartURLLoader;
+			
+			[Bindable]
+			protected var voiceNotes:ArrayCollection;
+			
+			[Bindable]
+			protected var isRecording:Boolean = false;
+			
+			[Bindable]
+			protected var isPlaying:Boolean = false;
+			
+			protected var microphoneWasMuted:Boolean;
+
+			protected var microphone:Microphone;
+			protected var soundClip:ByteArray;
+			protected var sound:Sound;
+			protected var channel:SoundChannel;
+			protected var callbackRegistry:Object;
+			protected var postURI:String;
+			protected var debugLog:Array = new Array();
+			protected var mp3Encoder:ShineMP3Encoder;
+			
+			function onUncaughtError():void
+			{}
+			
+			protected function application1_initializeHandler(event:FlexEvent):void
+			{
+				if (ExternalInterface.available) {
+					ExternalInterface.addCallback("startRecording", startRecording);
+					ExternalInterface.addCallback("stopRecording",  stopRecording);
+					ExternalInterface.addCallback("startPlaying",   startPlaying);
+					ExternalInterface.addCallback("stopPlaying",    stopPlaying);
+					ExternalInterface.addCallback("upload",         upload);
+					ExternalInterface.addCallback("getDebugLog",    getDebugLog);
+					ExternalInterface.addCallback("debug",          debug2);
+					ExternalInterface.addCallback("getData",        getData);
+
+					debug('ExternalInterface setup!');
+					try{
+						triggerCallbacks('initialized', {});
+					}catch(e:Error){
+						debug(e.message + "\n" + e.getStaceTrace());
+					}
+				}else{
+					debug('ExternalInterface NOT available');
+				}
+				
+			}
+			
+			protected function triggerCallbacks(eventName:String, arg):void
+			{	
+				ExternalInterface.call("RecButton.trigger", eventName, arg);
+			}
+			
+			protected function getDebugLog():Array
+			{
+				return debugLog;
+			}
+			
+			protected function getData():String
+			{
+				var ret:String="";
+				//soundClip.position = 0;
+				//while(soundClip.position < soundClip.length){
+				//	ret << soundClip.readFloat().toString() + ";";
+				//}
+				
+				soundClip.position = 0;
+				
+				// Write to file in chunks of converted data.
+				while (soundClip.bytesAvailable > 0) 
+				{
+					ret += soundClip.readFloat().toString() + ";";
+				}
+				return ret;
+			}
+			
+			protected function upload(uri:String, attributes:Object): void
+			{
+				postURI = uri;
+				// be kind rewind!
+				soundClip.position = 0;
+				debug('converting to wav');
+				var wavData:ByteArray = convertToWav();
+					
+				postClipToURI(wavData, attributes);
+			}
+			
+			protected function postClipToURI(clip:ByteArray, parameters:Object):void
+			{
+				var ml:MultipartURLLoader = new MultipartURLLoader();
+				ml.addEventListener(Event.COMPLETE, onReady);
+				function onReady(e:Event):void
+				{
+					triggerCallbacks('uploadCompleteFile', this);
+					triggerCallbacks('uploadComplete', e);
+					debug('posting done');
+				}
+				
+				for(var k in parameters){
+					ml.addVariable(k, parameters[k]);		
+				}
+				
+				ml.addFile(clip, 'audio.wav', 'track[asset_data]');
+				ml.load(postURI, false);
+			
+			}
+			
+			protected function convertToWav():ByteArray
+			{
+				var wavData:ByteArray = new ByteArray();
+				var wavWriter:WAVWriter = new WAVWriter(); 
+				soundClip.position = 0;
+				wavWriter.numOfChannels = 1; // set the inital properties of the Wave Writer 
+				wavWriter.sampleBitRate = 16; 
+				wavWriter.samplingRate = 44100; 
+				wavWriter.processSamples(wavData, soundClip, 44100, 1);
+				return wavData;
+			}
+			
+			protected function toggleRecording():void
+			{
+				if (isRecording)
+				{
+					isRecording = false;
+					stopRecording();
+				}
+				else
+				{
+					isRecording = true;
+					startRecording();
+				}
+			}
+			
+			protected function setup():void
+			{
+				debug('setup');
+				microphone = Microphone.getMicrophone();
+				microphone.setSilenceLevel(0);
+				microphone.rate = 44;
+				microphone.gain = 50;
+				microphone.addEventListener(StatusEvent.STATUS, statusHandler);
+				
+				microphoneWasMuted = microphone.muted;
+				if(microphoneWasMuted){
+					debug('showFlashRequired');
+					triggerCallbacks('showFlash','');
+
+					//triggerCallbacks('microphoneForbidden');
+				} 
+				
+				debug('mic: ' + microphone.name + ' ' + microphone.muted);
+			}
+			
+			protected function statusHandler(e:Event):void
+			{
+				debug('statusHandler');
+				if(!microphone.muted){
+					if(!isRecording){
+						startRecordingSrsly();
+					}
+				}
+			}
+			
+			protected function startRecordingSrsly():void
+			{
+				if(microphoneWasMuted){
+					microphoneWasMuted = false;
+					triggerCallbacks('hideFlash','');
+				}
+				triggerCallbacks('recordingStart', {});
+				debug('startRecording');
+				isRecording = true;
+				sampleCount = 0;
+			}
+			
+			protected function startRecording():void
+			{
+				if(!microphone){ 
+					setup();
+				}
+				
+				if(!microphone.muted){
+					startRecordingSrsly();
+				}else{
+					triggerCallbacks(' ', {});
+				}				
+				
+				soundClip = new ByteArray();
+				microphone.addEventListener(SampleDataEvent.SAMPLE_DATA, microphone_sampleDataHandler);
+			}
+			
+			protected function stopRecording():void
+			{
+				debug('recoff');
+				isRecording = false;
+				triggerCallbacks('recordingStop', {});
+				microphone.removeEventListener(SampleDataEvent.SAMPLE_DATA, microphone_sampleDataHandler);
+				debug('!');
+			}
+			
+			
+			var sampleCount:int;
+			protected function microphone_sampleDataHandler(event:SampleDataEvent):void
+			{
+			//	if(sampleCount <= 1){ // FIXME 1 doesnt make sense?
+			//		triggerCallbacks('recordingStart', event.data.length);
+			//	}
+				
+				sampleCount++;
+				
+				if(sampleCount % 10 == 0){
+					debug('sample: ' + event.data.length.toString());
+				}
+				
+				while(event.data.bytesAvailable)
+				{
+					var sample:Number = event.data.readFloat();
+					soundClip.writeFloat(sample);
+				}
+			}
+			
+			protected function startPlaying():void
+			{
+				debug('playon');
+				isPlaying = true;
+				triggerCallbacks('playingStart', {});
+				soundClip.position = 0;
+				sound = new Sound();
+				sound.addEventListener(SampleDataEvent.SAMPLE_DATA, sound_sampleDataHandler);
+				channel = sound.play();
+				channel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);     
+				debug('!');
+			}
+			
+			protected function stopPlaying():void
+			{
+				debug('playoff');
+				if(channel){
+				channel.stop();
+				triggerCallbacks('playingStop', {});
+				isPlaying = false;
+				debug('!');
+				}
+			}
+			
+			protected function sound_sampleDataHandler(event:SampleDataEvent):void
+			{
+				if (!soundClip.bytesAvailable > 0)
+				{
+					return;
+				}
+				
+				for (var i:int = 0; i < 8192; i++)
+				{
+					var sample:Number = 0;
+					if (soundClip.bytesAvailable > 0)
+					{
+						sample = soundClip.readFloat();
+					}
+					event.data.writeFloat(sample); 
+					event.data.writeFloat(sample);  
+				}
+			}
+			
+			protected function soundCompleteHandler(event:Event):void
+			{
+				triggerCallbacks('playingStop', {});
+				isPlaying = false;
+			}
+			
+			protected function debug(message:String):void
+			{
+				triggerCallbacks('debug', {message: message});
+				debugLog.push(message);
+			}
+			
+			protected function debug2(message:String, params:Object):String
+			{
+				try {
+				debug('debug2');
+				triggerCallbacks('debug', {'message': message});
+				debugLog.push(message);
+				debug('try 2');
+				postURI = message;
+				// be kind rewind!
+				if(soundClip){
+					debug('clip');
+
+					soundClip.position = 0;
+				}
+				debug('soundC');
+				debug('converting to wav');
+				var wavData:ByteArray = convertToWav();
+				debug('uploading');
+				postClipToURI(wavData, params);
+				}catch(e:Error){
+					debug(e.getStackTrace());
+				  debug(e.toString());
+				}
+			return(message);
+			}
+
+			protected function application1_errorHandler(event:ErrorEvent):void
+			{
+				debug('err');
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:Application>
