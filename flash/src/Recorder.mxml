@@ -58,7 +58,7 @@
 					ExternalInterface.addCallback("upload",         upload);
 					ExternalInterface.addCallback("getDebugLog",    getDebugLog);
 					ExternalInterface.addCallback("debug",          debug2);
-					ExternalInterface.addCallback("getData",        getData);
+					ExternalInterface.addCallback("data",        	data);
 
 					debug('ExternalInterface setup!');
 					try{
@@ -74,7 +74,7 @@
 			
 			protected function triggerCallbacks(eventName:String, arg):void
 			{	
-				ExternalInterface.call("RecButton.trigger", eventName, arg);
+				ExternalInterface.call("Recorder.trigger", eventName, arg);
 			}
 			
 			protected function getDebugLog():Array
@@ -82,7 +82,7 @@
 				return debugLog;
 			}
 			
-			protected function getData():String
+			protected function data():String
 			{
 				var ret:String="";
 				//soundClip.position = 0;
@@ -168,6 +168,7 @@
 				
 				microphoneWasMuted = microphone.muted;
 				if(microphoneWasMuted){
+					Security.showSettings(SecurityPanel.PRIVACY);
 					debug('showFlashRequired');
 					triggerCallbacks('showFlash','');
 
@@ -217,7 +218,7 @@
 			
 			protected function stopRecording():void
 			{
-				debug('recoff');
+				debug('stopRecording');
 				isRecording = false;
 				triggerCallbacks('recordingStop', {});
 				microphone.removeEventListener(SampleDataEvent.SAMPLE_DATA, microphone_sampleDataHandler);
@@ -227,46 +228,48 @@
 			
 			var sampleCount:int;
 			protected function microphone_sampleDataHandler(event:SampleDataEvent):void
-			{
-			//	if(sampleCount <= 1){ // FIXME 1 doesnt make sense?
-			//		triggerCallbacks('recordingStart', event.data.length);
-			//	}
-				
-				sampleCount++;
-				
-				if(sampleCount % 10 == 0){
-					debug('sample: ' + event.data.length.toString());
-				}
-				
+			{	
 				while(event.data.bytesAvailable)
 				{
 					var sample:Number = event.data.readFloat();
 					soundClip.writeFloat(sample);
+					sampleCount++;
+					if(sampleCount % 10000 == 0){
+						triggerCallbacks('recordingProgress', int(sampleCount / 44.1));
+					}	
 				}
 			}
-			
+			private var positionTimer:Timer;
+
 			protected function startPlaying():void
 			{
-				debug('playon');
+				debug('startPlaying');
 				isPlaying = true;
 				triggerCallbacks('playingStart', {});
 				soundClip.position = 0;
 				sound = new Sound();
 				sound.addEventListener(SampleDataEvent.SAMPLE_DATA, sound_sampleDataHandler);
+
 				channel = sound.play();
-				channel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);     
-				debug('!');
+				channel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);  
+				positionTimer = new Timer(50);
+				positionTimer.addEventListener(TimerEvent.TIMER, positionTimerHandler);
+				positionTimer.start();
 			}
-			
+
 			protected function stopPlaying():void
 			{
-				debug('playoff');
+				debug('stopPlaying');
 				if(channel){
 				channel.stop();
 				triggerCallbacks('playingStop', {});
 				isPlaying = false;
 				debug('!');
 				}
+			}
+			protected function positionTimerHandler(event:TimerEvent):void
+			{
+				triggerCallbacks('playingProgress', int(channel.position));
 			}
 			
 			protected function sound_sampleDataHandler(event:SampleDataEvent):void
@@ -283,6 +286,7 @@
 					{
 						sample = soundClip.readFloat();
 					}
+						
 					event.data.writeFloat(sample); 
 					event.data.writeFloat(sample);  
 				}
