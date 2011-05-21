@@ -20,6 +20,7 @@ Have a look at RecButton.com as well. It's a widget to add recording to SoundClo
 ### ``Recorder.initialize()`` ###
 
 The Recorder needs to be initialized. Usage:
+
       Recorder.initialize({
         swfSrc: "/recorder.swf"                                   // (optional but recommended) URL to recorder.swf. Will default to "http://recbutton.com/recorder.swf"
         flashContainer: document.getElementById("somecontainer"), // (optional) element where recorder.swf will be placed (needs to be 230x140 px)
@@ -29,7 +30,7 @@ The Recorder needs to be initialized. Usage:
       });
 
 If flashContainer and onFlashSecurity is not passed as options an invisible ``DIV`` element including the Recorder.swf will be
-inserted at the end of the ``BODY` and will be displayed centered in the screen when necessary.
+inserted at the end of the ``BODY`` and will be displayed centered in the screen when necessary.
 
 ### Recorder.record(options) ###
 
@@ -69,6 +70,7 @@ Will stop the current recording or playing.
 ### Recorder.upload() ###
 
 Will initiate a multipart POST (or PUT) to upload the recorded audio. Usage:
+
       Record.upload({
         method: "POST"                             // (not implemented) (optional, defaults to POST) HTTP Method can be either POST or PUT 
         url: "http://api.soundcloud.com/tracks",   // URL to upload to (needs to have a suitable crossdomain.xml for Adobe Flash)
