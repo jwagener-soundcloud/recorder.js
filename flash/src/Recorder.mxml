@@ -7,6 +7,7 @@
 		<![CDATA[
 			import com.adobe.audio.format.WAVWriter;
 			import com.adobe.serialization.json.JSON;
+			
 			import flash.display.Sprite;
 			import flash.events.ErrorEvent;
 			import flash.events.SampleDataEvent;
@@ -41,7 +42,6 @@
 			protected var sound:Sound;
 			protected var channel:SoundChannel;
 			protected var callbackRegistry:Object;
-			protected var postURI:String;
 			protected var debugLog:Array = new Array();
 			protected var mp3Encoder:ShineMP3Encoder;
 			
@@ -57,7 +57,6 @@
 					ExternalInterface.addCallback("stopPlaying",    stopPlaying);
 					ExternalInterface.addCallback("upload",         upload);
 					ExternalInterface.addCallback("getDebugLog",    getDebugLog);
-					ExternalInterface.addCallback("debug",          debug2);
 					ExternalInterface.addCallback("data",        	data);
 
 					debug('ExternalInterface setup!');
@@ -100,18 +99,15 @@
 				return ret;
 			}
 			
-			protected function upload(uri:String, attributes:Object): void
+			protected function upload(uri:String, audioParam:String, attributes:Object): void
 			{
-				postURI = uri;
-				// be kind rewind!
+				debug("upload");
 				soundClip.position = 0;
-				debug('converting to wav');
-				var wavData:ByteArray = convertToWav();
-					
-				postClipToURI(wavData, attributes);
+				var wavData:ByteArray = convertToWav();					
+				postClipToURI(uri, audioParam, wavData, attributes);
 			}
 			
-			protected function postClipToURI(clip:ByteArray, parameters:Object):void
+			protected function postClipToURI(uri:String, audioParam:String, clip:ByteArray, parameters:Object):void
 			{
 				var ml:MultipartURLLoader = new MultipartURLLoader();
 				ml.addEventListener(Event.COMPLETE, onReady);
@@ -126,8 +122,8 @@
 					ml.addVariable(k, parameters[k]);		
 				}
 				
-				ml.addFile(clip, 'audio.wav', 'track[asset_data]');
-				ml.load(postURI, false);
+				ml.addFile(clip, 'audio.wav', audioParam);
+				ml.load(uri, false);
 			
 			}
 			
@@ -304,32 +300,6 @@
 				debugLog.push(message);
 			}
 			
-			protected function debug2(message:String, params:Object):String
-			{
-				try {
-				debug('debug2');
-				triggerCallbacks('debug', {'message': message});
-				debugLog.push(message);
-				debug('try 2');
-				postURI = message;
-				// be kind rewind!
-				if(soundClip){
-					debug('clip');
-
-					soundClip.position = 0;
-				}
-				debug('soundC');
-				debug('converting to wav');
-				var wavData:ByteArray = convertToWav();
-				debug('uploading');
-				postClipToURI(wavData, params);
-				}catch(e:Error){
-					debug(e.getStackTrace());
-				  debug(e.toString());
-				}
-			return(message);
-			}
-
 			protected function application1_errorHandler(event:ErrorEvent):void
 			{
 				debug('err');

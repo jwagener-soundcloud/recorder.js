@@ -66,9 +66,12 @@ var Recorder = {
     this.flashInterface().startPlaying();
   },
 
-  upload: function(url, params, options){
-    this.bind("uploadComplete", options.onUploadComplete);
-    this.flashInterface().upload(url, params);
+  upload: function(options){
+    options.audioParam = options.audioParam || "audio";
+    options.params     = options.params || {};
+    this.clearBindings("uploadComplete");
+    this.bind("uploadComplete", options.success);
+    this.flashInterface().upload(options.url, options.audioParam, options.params);
   },
   
   /*data: function(pitch){

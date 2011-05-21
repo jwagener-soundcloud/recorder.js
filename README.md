@@ -9,13 +9,12 @@ Have a look at RecButton.com as well. It's a widget to add recording to SoundClo
   * Copy the 2 files somewhere into your website directory
     * recorder.js
     * recorder.swf
-  * Add a <script type="text/javascript" src="path/to/recorder.swf"></script>
-  * This will add a global object ``Recorder``.
-  * Have a look at the example 1 and/or the API section to see how it works.
+  * Add the script to your HTML: ```<script type="text/javascript" src="path/to/recorder.swf"></script>```
+  * This will define the global ``Recorder`` object.
+  * Have a look at the examples and the API doc.
 
 ## Examples ##
-  * [most simple example](example-0.html)
-  * [example using Connect with SoundCloud](example-2.html)
+  * [very basic example](example-1.html)
 
 ## API ##
 ### ``Recorder.initialize()`` ###
@@ -68,18 +67,20 @@ Will play the recorded audio. Usage:
 Will stop the current recording or playing.
 
 ### Recorder.upload() ###
+
 Will initiate a multipart POST (or PUT) to upload the recorded audio. Usage:
       Record.upload({
-        method: "POST"                      // (optional, defaults to POST) HTTP Method can be either POST or PUT
-        url: "http://soundcloud.com/xxx",   // URL to upload to
-        data_param: "track[asset_data]",    // Name for the audio data parameter
-        params: {                           // Additional parameters (needs to be a flat object)
-          "track[title]": "some track title",
+        method: "POST"                             // (not implemented) (optional, defaults to POST) HTTP Method can be either POST or PUT 
+        url: "http://api.soundcloud.com/tracks",   // URL to upload to (needs to have a suitable crossdomain.xml for Adobe Flash)
+        audioParam: "track[asset_data]",           // Name for the audio data parameter
+        params: {                                  // Additional parameters (needs to be a flat object)
+          "track[title]": "some track",
+          "oauth_token":  "VALID_TOKEN"
         },
         success: function(){                // will be called after successful upload
         
         },
-        error: function(){                  // will be called if an error occurrs
+        error: function(){                  // (not implemented) will be called if an error occurrs
         
         },
         progress: NULL                      // (not yet implemented)
