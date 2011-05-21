@@ -6,9 +6,6 @@
     <link rel="stylesheet" type="text/css" href="example.css" />
   </head>
   <body>      
-    <script type="text/javascript" src="https://github.com/corbanbrook/dsp.js/raw/master/dsp.js"></script>
-    <script type="text/javascript" src="pitchshift.js"></script>
-    
     <script type="text/javascript" src="../recorder.js"></script>
     <script>
       function timecode(ms) {
@@ -30,7 +27,9 @@
       }
     
     
-      Recorder.initialize();
+      Recorder.initialize({
+        swfSrc: "../recorder.swf"
+      });
 
       function record(){
         Recorder.record({

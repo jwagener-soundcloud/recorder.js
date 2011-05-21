@@ -1,5 +1,3 @@
-var xxx;
-
 var Recorder = {
   swfCode: '<object id="Recorder" style="z-index: 200" width="230" height="140" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"><param value="transparent" name="wmode"><param value="RECORDER_URI" name="movie"><param value="always" name="allowScriptAccess"><embed width="230" height="140" wmode="transparent" name="Recorder" type="application/x-shockwave-flash" src="RECORDER_URI" allowscriptaccess="always">  </object>',
   swfObject: null,

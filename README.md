@@ -14,7 +14,7 @@ Have a look at RecButton.com as well. It's a widget to add recording to SoundClo
   * Have a look at the examples and the API doc.
 
 ## Examples ##
-  * [very basic example](example-1.html)
+  * [basic example](http://dl.dropbox.com/u/12477597/Permanent/recorder.js/examples/example-1.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-1.html)
 
 ## API ##
 ### ``Recorder.initialize()`` ###
