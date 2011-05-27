@@ -22,7 +22,7 @@ Have a look at RecButton.com as well. It's a widget to add recording to SoundClo
 The Recorder needs to be initialized. Usage:
 
       Recorder.initialize({
-        swfSrc: "/recorder.swf"                                   // (optional but recommended) URL to recorder.swf. Will default to "http://recbutton.com/recorder.swf"
+        swfSrc: "/recorder.swf"                                   // URL to recorder.swf
         flashContainer: document.getElementById("somecontainer"), // (optional) element where recorder.swf will be placed (needs to be 230x140 px)
         onFlashVisibility: function(){                            // (optional) callback when the flash swf needs to be visible
                                                                   // this allows you to hide/show the flashContainer element on demand.

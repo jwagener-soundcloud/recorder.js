@@ -67,8 +67,11 @@ var Recorder = {
   upload: function(options){
     options.audioParam = options.audioParam || "audio";
     options.params     = options.params || {};
-    this.clearBindings("uploadComplete");
-    this.bind("uploadComplete", options.success);
+    this.clearBindings("uploadSuccess");
+    this.bind("uploadSuccess", function(responseText){
+      options.success(responseText);
+    });
+    
     this.flashInterface().upload(options.url, options.audioParam, options.params);
   },
   

@@ -16,8 +16,8 @@
 			import flash.media.Sound;
 			import flash.media.SoundChannel;
 			import flash.system.Capabilities;
-			import flash.utils.ByteArray;
-			
+
+			import flash.utils.ByteArray;			
 			import fr.kikko.lab.ShineMP3Encoder;
 			
 			import mx.collections.ArrayCollection;
@@ -113,9 +113,8 @@
 				ml.addEventListener(Event.COMPLETE, onReady);
 				function onReady(e:Event):void
 				{
-					triggerCallbacks('uploadCompleteFile', this);
-					triggerCallbacks('uploadComplete', e);
-					debug('posting done');
+					triggerCallbacks('uploadSuccess', e.target.loader.data);
+					debug('uploading done');
 				}
 				
 				for(var k in parameters){
