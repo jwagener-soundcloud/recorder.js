@@ -60,12 +60,11 @@
           client_id: "aHT5HITYm8vlkWNabL0Qg",
           redirect_uri: "http://recorder.dev/examples/soundcloud-callback.html",
           connected: function(){
-            console.log("uploading");
             Recorder.upload({
               url:        "https://api.soundcloud.com/tracks.json?oauth_token=" + SC.options.access_token,
               audioParam: "track[asset_data]",
               params: {
-                "track[title]": "recorder.js track test",
+                "track[title]":   "recorder.js track test",
                 "track[sharing]": "private"
               },
               success: function(responseText){

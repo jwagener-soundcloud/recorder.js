@@ -56,6 +56,7 @@
 					ExternalInterface.addCallback("startPlaying",   startPlaying);
 					ExternalInterface.addCallback("stopPlaying",    stopPlaying);
 					ExternalInterface.addCallback("upload",         upload);
+					ExternalInterface.addCallback("showFlash",      showFlash);
 					ExternalInterface.addCallback("getDebugLog",    getDebugLog);
 					ExternalInterface.addCallback("data",        	data);
 
@@ -136,6 +137,12 @@
 				wavWriter.samplingRate = 44100; 
 				wavWriter.processSamples(wavData, soundClip, 44100, 1);
 				return wavData;
+			}
+			
+			protected function showFlash():void
+			{
+				Security.showSettings();
+				triggerCallbacks('showFlash','');	
 			}
 			
 			protected function toggleRecording():void

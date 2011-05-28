@@ -79,7 +79,7 @@ Will initiate a multipart POST (or PUT) to upload the recorded audio. Usage:
           "track[title]": "some track",
           "oauth_token":  "VALID_TOKEN"
         },
-        success: function(){                // will be called after successful upload
+        success: function(responseText){           // will be called after successful upload
         
         },
         error: function(){                  // (not implemented) will be called if an error occurrs
