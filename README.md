@@ -54,7 +54,7 @@ Usage:
 
 Will play the recorded audio. Usage:
 
-      Record.play({
+      Recorder.play({
         finished: function(){               // will be called when playback is finished
           
         },
@@ -71,7 +71,7 @@ Will stop the current recording or playing.
 
 Will initiate a multipart POST (or PUT) to upload the recorded audio. Usage:
 
-      Record.upload({
+      Recorder.upload({
         method: "POST"                             // (not implemented) (optional, defaults to POST) HTTP Method can be either POST or PUT 
         url: "http://api.soundcloud.com/tracks",   // URL to upload to (needs to have a suitable crossdomain.xml for Adobe Flash)
         audioParam: "track[asset_data]",           // Name for the audio data parameter
