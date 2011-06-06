@@ -15,6 +15,7 @@ Have a look at RecButton.com as well. It's a widget to add recording to SoundClo
 
 ## Examples ##
   * [basic example](http://dl.dropbox.com/u/12477597/Permanent/recorder.js/examples/example-1.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-1.html)
+  * [upload to soundcloud example](http://dl.dropbox.com/u/12477597/Permanent/recorder.js/examples/example-2.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-2.html)
 
 ## API ##
 ### ``Recorder.initialize()`` ###
@@ -24,7 +25,7 @@ The Recorder needs to be initialized. Usage:
       Recorder.initialize({
         swfSrc: "/recorder.swf"                                   // URL to recorder.swf
         flashContainer: document.getElementById("somecontainer"), // (optional) element where recorder.swf will be placed (needs to be 230x140 px)
-        onFlashVisibility: function(){                            // (optional) callback when the flash swf needs to be visible
+        onFlashSecurity: function(){                            // (optional) callback when the flash swf needs to be visible
                                                                   // this allows you to hide/show the flashContainer element on demand.
         },
       });
