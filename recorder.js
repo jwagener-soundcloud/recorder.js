@@ -1,5 +1,5 @@
 var Recorder = {
-  swfCode: '<object id="Recorder" style="z-index: 200" width="230" height="140" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"><param value="transparent" name="wmode"><param value="RECORDER_URI" name="movie"><param value="always" name="allowScriptAccess"><embed width="230" height="140" wmode="transparent" name="Recorder" type="application/x-shockwave-flash" src="RECORDER_URI" allowscriptaccess="always">  </object>',
+  swfCode: '<object id="Recorder" style="z-index: 200" width="231" height="141" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"><param value="transparent" name="wmode"><param value="RECORDER_URI" name="movie"><param value="always" name="allowScriptAccess"><embed width="231" height="141" wmode="transparent" name="Recorder" type="application/x-shockwave-flash" src="RECORDER_URI" allowscriptaccess="always">  </object>',
   swfObject: null,
   events: {},
   options: {},
@@ -75,27 +75,10 @@ var Recorder = {
     this.flashInterface().upload(options.url, options.audioParam, options.params);
   },
   
-  /*data: function(pitch){
+  data: function(pitch){
     var rawData = this.flashInterface().data().split(";");
-    
-    var pitcher = new Pitchshift(2048, 44100, "FFT");
-    pitcher.process(pitch, rawData.length, 4, rawData);
-    xxx = pitcher;
-    console.log(pitcher);
-    
-    if(webkitAudioContext){
-      var context = new webkitAudioContext();
-      var buffer = context.createBuffer(1, rawData.length, 44100);
-      for (var i=0; i < rawData.length; i++) {
-        buffer.getChannelData(0)[i] = pitcher.outdata[i];
-      }
-      
-      return buffer;
-    }else{
-      throw "enable Chrome web audio in about:flags";
-    }
-    return null;
-  },*/
+    return rawData;
+  },
   
   clearBindings: function(eventName){
     Recorder.events[eventName] = [];
