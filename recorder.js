@@ -41,8 +41,8 @@ var Recorder = {
 
     this.bind('recordingStart', function(){
       var flashContainer = Recorder.options.flashContainer;
-      flashContainer.style.left= "-230px";
-      flashContainer.style.top = "-140px";
+      flashContainer.style.left = undefined;
+      flashContainer.style.top  = undefined;
     });
 
 //    this.bind('recordingStart', options['onRecording']);
