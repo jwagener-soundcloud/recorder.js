@@ -72,9 +72,9 @@
 				
 			}
 			
-			protected function triggerCallbacks(eventName:String, arg):void
+			protected function triggerCallbacks(eventName:String, arg0, arg1 = null):void
 			{	
-				ExternalInterface.call("Recorder.trigger", eventName, arg);
+				ExternalInterface.call("Recorder.trigger", eventName, arg0, arg1);
 			}
 			
 			protected function getDebugLog():Array
@@ -85,14 +85,7 @@
 			protected function data():String
 			{
 				var ret:String="";
-				//soundClip.position = 0;
-				//while(soundClip.position < soundClip.length){
-				//	ret << soundClip.readFloat().toString() + ";";
-				//}
-				
-				soundClip.position = 0;
-				
-				// Write to file in chunks of converted data.
+				soundClip.position = 0;				
 				while (soundClip.bytesAvailable > 0) 
 				{
 					ret += soundClip.readFloat().toString() + ";";
@@ -218,15 +211,20 @@
 				microphone.addEventListener(SampleDataEvent.SAMPLE_DATA, microphone_sampleDataHandler);
 			}
 			
-			protected function stopRecording():void
+			protected function stopRecording():int
 			{
 				debug('stopRecording');
 				isRecording = false;
-				triggerCallbacks('recordingStop', {});
+				triggerCallbacks('recordingStop', {duration: recordingDuration()});
 				microphone.removeEventListener(SampleDataEvent.SAMPLE_DATA, microphone_sampleDataHandler);
-				debug('!');
+				return recordingDuration();
 			}
 			
+			
+			protected function recordingDuration():int
+			{
+				return int(sampleCount / 44.1)
+			}
 			
 			var sampleCount:int;
 			protected function microphone_sampleDataHandler(event:SampleDataEvent):void
@@ -237,7 +235,7 @@
 					soundClip.writeFloat(sample);
 					sampleCount++;
 					if(sampleCount % 10000 == 0){
-						triggerCallbacks('recordingProgress', int(sampleCount / 44.1));
+						triggerCallbacks('recordingProgress', recordingDuration(), 	microphone.activityLevel);
 					}	
 				}
 			}
@@ -245,7 +243,7 @@
 
 			protected function startPlaying():void
 			{
-				debug('startPlaying');
+				debug('startPlaying - v7');
 				isPlaying = true;
 				triggerCallbacks('playingStart', {});
 				soundClip.position = 0;
@@ -254,6 +252,10 @@
 
 				channel = sound.play();
 				channel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);  
+				if(positionTimer){
+					positionTimer.reset();
+				}
+				
 				positionTimer = new Timer(50);
 				positionTimer.addEventListener(TimerEvent.TIMER, positionTimerHandler);
 				positionTimer.start();
@@ -263,12 +265,19 @@
 			{
 				debug('stopPlaying');
 				if(channel){
-				channel.stop();
-				triggerCallbacks('playingStop', {});
-				isPlaying = false;
-				debug('!');
+					channel.stop();
+					positionTimer.reset();
+
+					triggerCallbacks('playingStop', {});
+					isPlaying = false;
 				}
 			}
+			
+			protected function soundCompleteHandler(event:Event):void
+			{
+				stopPlaying();
+			}
+			
 			protected function positionTimerHandler(event:TimerEvent):void
 			{
 				triggerCallbacks('playingProgress', int(channel.position));
@@ -292,12 +301,6 @@
 					event.data.writeFloat(sample); 
 					event.data.writeFloat(sample);  
 				}
-			}
-			
-			protected function soundCompleteHandler(event:Event):void
-			{
-				triggerCallbacks('playingStop', {});
-				isPlaying = false;
 			}
 			
 			protected function debug(message:String):void

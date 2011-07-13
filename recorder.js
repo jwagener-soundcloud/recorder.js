@@ -58,8 +58,10 @@ var Recorder = {
   },
   
   play: function(options){
+    options = options || {};
     this.clearBindings("playingProgress");
     this.bind('playingProgress', options['progress']);
+    this.bind('playingStop', options['finished']);
     
     this.flashInterface().startPlaying();
   },
@@ -89,9 +91,9 @@ var Recorder = {
     Recorder.events[eventName].push(fn);
   },
   
-  trigger: function(eventName, args){
+  trigger: function(eventName, arg0, arg1){
     for(var cb in Recorder.events[eventName]){
-      Recorder.events[eventName][cb](args);
+      Recorder.events[eventName][cb](arg0, arg1);
     }
   },
 
