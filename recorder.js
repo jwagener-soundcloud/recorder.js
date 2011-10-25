@@ -25,7 +25,8 @@ var Recorder = {
         flashContainer.style.top    = (window.innerHeight / 2) - 70 + "px";
       }
     }
-    options.swfSrc = options.swfSrc;
+
+    this.bind('initialized', options.initialized);
     this.bind('showFlash', options.onFlashSecurity);
     options.flashContainer.innerHTML = this.swfCode.replace(/RECORDER_URI/g, options.swfSrc);
     this.swfObject = options.flashContainer.children[0];
@@ -111,6 +112,12 @@ var Recorder = {
   },
 
   flashInterface: function(){
-    return this.swfObject.record ? this.swfObject : this.swfObject.children[3];
+    if(!this.swfObject){
+      return null;
+    }else if(this.swfObject.record){
+      return this.swfObject;
+    }else if(this.swfObject.children[3].record){
+      return this.swfObject.children[3];
+    }
   },
 };
