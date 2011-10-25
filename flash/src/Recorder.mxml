@@ -33,9 +33,11 @@
 			protected static var sampleRate = 44.1;
 			
 			// These statics are used for a special SoundCloud build of the recorder
-			protected static var enableCrossDomainAccess = false;
-			protected static var exposeCrossDomainRequestFunction = false;
-			
+			// that allows to use connect.soundcloud.com/recorder.swf from any domain
+			// and provides a request method that allows cross domain ajax requests.
+
+			protected static var enableCrossDomainAccess 		  = true;
+			protected static var exposeCrossDomainRequestFunction = true;			
 			
 			protected function app_initializeHandler(event:FlexEvent):void
 			{	
