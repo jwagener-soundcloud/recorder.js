@@ -162,7 +162,7 @@
 				
 			}
 			
-			protected function request(method:String, url:String, parameters:Array, callback:String):void
+			protected function request(method:String, url:String, parameters:Array, callbackName:String):void
 			{
 				var variables:URLVariables = new URLVariables();
 				for(var i=0; i<parameters.length; i++){
@@ -175,13 +175,15 @@
 				request.data = variables;   
 				
 				var _subLoader = new URLLoader();
-				_subLoader.addEventListener( Event.COMPLETE, function(e:Event){
-					triggerEvent('callback', callback, [e.target.loader.data]);
-				});
 				
-				//_subLoader.addEventListener( HTTPStatusEvent.HTTP_STATUS, onHTTPStatus );
-				//_subLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-				_subLoader.dataFormat = URLLoaderDataFormat.VARIABLES
+				var callback = function(e:Event){
+					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target["data"], e.target]);
+				}
+					
+				_subLoader.addEventListener( Event.COMPLETE, callback);				
+				_subLoader.addEventListener(IOErrorEvent.IO_ERROR, callback);
+				_subLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, callback);
+				_subLoader.dataFormat = URLLoaderDataFormat.TEXT;
 				_subLoader.load( request );
 			}
 			
