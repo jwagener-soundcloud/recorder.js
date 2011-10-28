@@ -5,6 +5,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import com.adobe.audio.format.WAVWriter;
+			import com.adobe.serialization.json.JSON;
+			
 			import flash.events.ErrorEvent;
 			import flash.events.SampleDataEvent;
 			import flash.external.ExternalInterface;
@@ -13,8 +16,7 @@
 			import flash.media.SoundChannel;
 			import flash.system.Capabilities;
 			import flash.utils.ByteArray;
-			import com.adobe.audio.format.WAVWriter;
-			import com.adobe.serialization.json.JSON;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.FlexEvent;
@@ -164,17 +166,12 @@
 				
 			}
 			
-			protected function request(method:String, url:String, parameters:Array, callbackName:String):void
+			protected function request(method:String, url:String, data:String, callbackName:String):void
 			{
-				var variables:URLVariables = new URLVariables();
-				for(var i=0; i<parameters.length; i++){
-					var kv = parameters[i];
-					variables[kv[0]] = kv[1];
-				}
-				
 				var request:URLRequest = new URLRequest(url);
-				request.method  = method;            
-				request.data = variables;   
+				request.method = method;
+				request.requestHeaders = new Array(new URLRequestHeader("Content-Type", "application/x-www-form-urlencoded"));
+				request.data = data;
 				
 				var _subLoader = new URLLoader();
 				
