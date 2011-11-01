@@ -83,6 +83,7 @@ var Recorder = {
 
   request: function(method, uri, params, callback){
     var callbackName = this.registerCallback(callback);
+    console.log(method, uri, params, callbackName);
     this.flashInterface().request(method, uri, params, callbackName);
   },
   
@@ -97,7 +98,9 @@ var Recorder = {
   
   triggerEvent: function(eventName, arg0, arg1){
     for(var cb in Recorder._events[eventName]){
-      Recorder._events[eventName][cb](arg0, arg1);
+      window.setTimeout(function(){
+        Recorder._events[eventName][cb](arg0, arg1);
+      },10);
     }
   },
 

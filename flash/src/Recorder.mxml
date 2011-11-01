@@ -171,10 +171,16 @@
 				var request:URLRequest = new URLRequest(url);
 				request.method = method;
 				request.requestHeaders = new Array(new URLRequestHeader("Content-Type", "application/x-www-form-urlencoded"));
+
+				// workaround to not ignore method when body is blank
+				// see http://forums.adobe.com/thread/746809?decorator=print&displayFullThread=true
+				if(data == null || data == ""){
+					data = " ";
+				}
+
 				request.data = data;
 				
 				var _subLoader = new URLLoader();
-				
 				var callback = function(e:Event){
 					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target["data"], e.target]);
 				}
@@ -289,6 +295,7 @@
 			
 			protected function triggerEvent(eventName:String, arg0, arg1 = null):void
 			{	
+				debug("triggerEvent(" + eventName + "," + arg0.toString());
 				ExternalInterface.call("Recorder.triggerEvent", eventName, arg0, arg1);
 			}
 			
@@ -296,7 +303,7 @@
 			
 			protected function debug(message:String):void
 			{
-				triggerEvent('debug', {message: message});
+				//triggerEvent('debug', {message: message});
 				_debugLog.push(message);
 			}
 			
