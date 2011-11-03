@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" initialize="app_initializeHandler(event)" width="155" height="124" alpha="0" usePreloader="false" error="app_errorHandler(event)">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" initialize="app_initializeHandler(event)" width="431" height="441" alpha="0" usePreloader="false" error="app_errorHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -144,7 +144,7 @@
 		
 			/* Networking functions */ 
 			
-			protected function upload(uri:String, audioParam:String, parameters:Object): void
+			protected function upload(uri:String, audioParam:String, parameters): void
 			{
 				debug("upload");
 				buffer.position = 0;
@@ -157,8 +157,14 @@
 					debug('uploading done');
 				}
 				
-				for(var k in parameters){
-					ml.addVariable(k, parameters[k]);		
+				if(getQualifiedClassName(parameters.constructor) == "Array"){
+					for(var i=0; i<parameters.length; i++){
+						ml.addVariable(parameters[i][0], parameters[i][1]);
+					}
+				}else{
+					for(var k in parameters){
+						ml.addVariable(k, parameters[k]);
+					}
 				}
 				
 				ml.addFile(wav, 'audio.wav', audioParam);
@@ -179,13 +185,13 @@
 				}
 
 				request.data = data;
-				
+
 				var _subLoader = new URLLoader();
 				var callback = function(e:Event){
-					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target["data"], e.target]);
+					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target["data"], e]);
 				}
 					
-				_subLoader.addEventListener( Event.COMPLETE, callback);				
+				_subLoader.addEventListener(Event.COMPLETE, callback);
 				_subLoader.addEventListener(IOErrorEvent.IO_ERROR, callback);
 				_subLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, callback);
 				_subLoader.dataFormat = URLLoaderDataFormat.TEXT;
@@ -206,7 +212,7 @@
 			
 			protected function showFlash():void
 			{
-				Security.showSettings();
+				Security.showSettings(SecurityPanel.PRIVACY);
 				triggerEvent('showFlash','');	
 			}
 			
@@ -228,7 +234,7 @@
 				microphoneWasMuted = microphone.muted;
 				if(microphoneWasMuted){
 					debug('showFlashRequired');
-					Security.showSettings(SecurityPanel.MICROPHONE);
+					Security.showSettings(SecurityPanel.PRIVACY);
 					triggerEvent('showFlash','');
 				} 
 				

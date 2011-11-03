@@ -9,12 +9,8 @@ var Recorder = {
     this.options = options;
     if(!options.flashContainer){
       options.flashContainer = document.createElement("div");
-      options.flashContainer.style.left     = "-230px";
-      options.flashContainer.style.top      = "-140px";
-      options.flashContainer.style.width    = "230px";
-      options.flashContainer.style.height   = "140px";
-      options.flashContainer.style.position = "absolute";
-      
+      options.flashContainer.setAttribute("id", "recorderFlashContainer");
+      options.flashContainer.setAttribute("style", "position: fixed; left: -9999px; top: -9999px; width: 230px; height: 140px; margin-left: 10px; border-top: 6px solid rgba(128, 128, 128, 0.6); border-bottom: 6px solid rgba(128, 128, 128, 0.6); border-radius: 5px 5px; padding-bottom: 1px; padding-right: 1px;");
       document.body.appendChild(options.flashContainer);
     }
 
@@ -43,11 +39,11 @@ var Recorder = {
 
     this.bind('recordingStart', function(){
       var flashContainer = Recorder.options.flashContainer;
-      flashContainer.style.left = undefined;
-      flashContainer.style.top  = undefined;
+      flashContainer.style.left = "-9999px";
+      flashContainer.style.top  = "-9999px";
     });
 
-    this.bind('recordingStart', options['start']);
+    this.bind('recordingStart',    options['start']);
     this.bind('recordingProgress', options['progress']);
 
     this.flashInterface().record();
@@ -83,7 +79,6 @@ var Recorder = {
 
   request: function(method, uri, params, callback){
     var callbackName = this.registerCallback(callback);
-    console.log(method, uri, params, callbackName);
     this.flashInterface().request(method, uri, params, callbackName);
   },
   
@@ -98,9 +93,7 @@ var Recorder = {
   
   triggerEvent: function(eventName, arg0, arg1){
     for(var cb in Recorder._events[eventName]){
-      window.setTimeout(function(){
-        Recorder._events[eventName][cb](arg0, arg1);
-      },10);
+      Recorder._events[eventName][cb](arg0, arg1);
     }
   },
 
