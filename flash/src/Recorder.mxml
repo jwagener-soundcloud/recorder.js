@@ -48,8 +48,9 @@
 				}
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("record", 		record);
-					ExternalInterface.addCallback("stop",     		stop);
-					ExternalInterface.addCallback("play",           play);
+					// workaround: callback 'stop' is not allowed
+					ExternalInterface.addCallback("_stop",  		stop);
+					ExternalInterface.addCallback("_play",          play);
 					ExternalInterface.addCallback("upload",         upload);
 					ExternalInterface.addCallback("audioData",      audioData);
 					ExternalInterface.addCallback("showFlash",      showFlash);
@@ -234,7 +235,6 @@
 				microphoneWasMuted = microphone.muted;
 				if(microphoneWasMuted){
 					debug('showFlashRequired');
-					Security.showSettings(SecurityPanel.PRIVACY);
 					triggerEvent('showFlash','');
 				} 
 				

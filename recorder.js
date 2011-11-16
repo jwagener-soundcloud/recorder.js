@@ -50,7 +50,7 @@ var Recorder = {
   },
   
   stop: function(){
-    return this.flashInterface().stop();
+    return this.flashInterface()._stop();
   },
   
   play: function(options){
@@ -59,7 +59,7 @@ var Recorder = {
     this.bind('playingProgress', options['progress']);
     this.bind('playingStop', options['finished']);
     
-    this.flashInterface().play();
+    this.flashInterface()._play();
   },
 
   upload: function(options){
