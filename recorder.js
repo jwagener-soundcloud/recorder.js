@@ -115,5 +115,5 @@ var Recorder = {
     }else if(this.swfObject.children[3].record){
       return this.swfObject.children[3];
     }
-  },
+  }
 };
