@@ -118,7 +118,7 @@
 				if(playingProgressTimer){
 					playingProgressTimer.reset();
 				}
-				playingProgressTimer = new Timer(50);
+				playingProgressTimer = new Timer(250);
 				playingProgressTimer.addEventListener(TimerEvent.TIMER, function playingProgressTimerHandler(event:TimerEvent){
 					triggerEvent('playingProgress', int(channel.position));
 				});
@@ -279,7 +279,7 @@
 					var sample:Number = event.data.readFloat();
 
 					buffer.writeFloat(sample);
-					if(buffer.length % 10000 == 0){
+					if(buffer.length % 40000 == 0){
 						debug(buffer.length.toString());
 
 						triggerEvent('recordingProgress', recordingDuration(), 	microphone.activityLevel);
