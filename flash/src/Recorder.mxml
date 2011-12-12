@@ -173,11 +173,11 @@
 				
 			}
 			
-			protected function request(method:String, url:String, data:String, callbackName:String):void
+			protected function request(method:String, url:String, contentType:String, data:String, callbackName:String):void
 			{
 				var request:URLRequest = new URLRequest(url);
 				request.method = method;
-				request.requestHeaders = new Array(new URLRequestHeader("Content-Type", "application/x-www-form-urlencoded"));
+				request.requestHeaders = new Array(new URLRequestHeader("Content-Type", contentType));
 
 				// workaround to not ignore method when body is blank
 				// see http://forums.adobe.com/thread/746809?decorator=print&displayFullThread=true
