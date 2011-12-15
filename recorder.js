@@ -67,7 +67,7 @@ var Recorder = {
     options.params     = options.params || {};
     this.clearBindings("uploadSuccess");
     this.bind("uploadSuccess", function(responseText){
-      options.success(responseText);
+      options.success(Recorder._externalInterfaceDecode(responseText));
     });
     
     this.flashInterface().upload(options.url, options.audioParam, options.params);
@@ -115,5 +115,9 @@ var Recorder = {
     }else if(this.swfObject.children[3].record){
       return this.swfObject.children[3];
     }
+  },
+
+  _externalInterfaceDecode: function(data){
+    return data.replace(/%22/g, "\"").replace(/%5c/g, "\\").replace(/%26/g, "&").replace(/%25/g, "%");
   }
 };

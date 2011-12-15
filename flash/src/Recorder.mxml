@@ -154,7 +154,7 @@
 				ml.addEventListener(Event.COMPLETE, onReady);
 				function onReady(e:Event):void
 				{
-					triggerEvent('uploadSuccess', e.target.loader.data);
+					triggerEvent('uploadSuccess', externalInterfaceEncode(e.target.loader.data));
 					debug('uploading done');
 				}
 				
@@ -189,7 +189,8 @@
 
 				var _subLoader = new URLLoader();
 				var callback = function(e:Event){
-					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target["data"], e]);
+					e.target.data = externalInterfaceEncode(e.target.data);
+					ExternalInterface.call("Recorder.triggerCallback", callbackName, [e.target.data, e]);
 				}
 					
 				_subLoader.addEventListener(Event.COMPLETE, callback);
@@ -199,6 +200,9 @@
 				_subLoader.load( request );
 			}
 			
+			private function externalInterfaceEncode(data:String){
+				return data.split("%").join("%25").split("\\").join("%5c").split("\"").join("%22").split("&").join("%26");
+			}
 			
 			protected function audioData():String
 			{
