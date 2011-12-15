@@ -77,9 +77,9 @@ var Recorder = {
     return this.flashInterface().audioData().split(";");
   },
 
-  request: function(method, uri, params, callback){
+  request: function(method, uri, contentType, data, callback){
     var callbackName = this.registerCallback(callback);
-    this.flashInterface().request(method, uri, params, callbackName);
+    this.flashInterface().request(method, uri, contentType, data, callbackName);
   },
   
   clearBindings: function(eventName){
