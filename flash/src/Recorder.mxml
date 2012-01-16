@@ -16,6 +16,7 @@
 			import flash.media.SoundChannel;
 			import flash.system.Capabilities;
 			import flash.utils.ByteArray;
+			import flash.utils.getTimer;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -32,6 +33,7 @@
 			protected var sound:Sound;
 			protected var channel:SoundChannel;
 			protected var _debugLog:Array = new Array();
+			protected var recordingStartTime = 0;
 			protected static var sampleRate = 44.1;
 			
 			// These statics are used for a special SoundCloud build of the recorder
@@ -56,6 +58,8 @@
 					ExternalInterface.addCallback("showFlash",      showFlash);
 					ExternalInterface.addCallback("debugLog",       debugLog);
 					ExternalInterface.addCallback("raiseError",     raiseError);
+					ExternalInterface.addCallback("recordingDuration",     recordingDuration);
+
 					if(exposeCrossDomainRequestFunction){
 						ExternalInterface.addCallback("request",        request);
 					}
@@ -231,6 +235,7 @@
 				microphone.gain = 50;
 				microphone.addEventListener(StatusEvent.STATUS, function statusHandler(e:Event) {
 					debug('Microphone Status Change');
+					recordingStartTime = getTimer();
 					if(!microphone.muted && !isRecording){
 						notifyRecordingStarted();
 					}
@@ -272,8 +277,8 @@
 			
 			protected function recordingDuration():int
 			{
-				var floatByteSize = 4;
-				return int(buffer.length / sampleRate / floatByteSize)
+				var latency = 650;
+				return int(getTimer() - recordingStartTime - latency);
 			}
 			
 			protected function recordSampleDataHandler(event:SampleDataEvent):void
