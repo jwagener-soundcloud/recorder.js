@@ -278,7 +278,8 @@
 			protected function recordingDuration():int
 			{
 				var latency = 650;
-				return int(getTimer() - recordingStartTime - latency);
+				var duration = int(getTimer() - recordingStartTime - latency);
+				return Math.max(duration, 0);
 			}
 			
 			protected function recordSampleDataHandler(event:SampleDataEvent):void
