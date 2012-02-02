@@ -6,7 +6,7 @@ function setupRecorder(swfSrc, callback){
 }
 
 function setupTests(){
-  test("Recorder.swf Exposed Function", function() {
+  test("Recorder.swf Exposed Functions", function() {
     var fi = Recorder.flashInterface();
     ok(fi.record            != undefined, "record()");
     ok(fi._stop             != undefined, "_stop()");
@@ -20,5 +20,5 @@ function setupTests(){
 }
 
 $(function(){
-  setupRecorder("../flash/bin-release/Recorder.swf", setupTests);
+  setupRecorder("../flash/bin-release/FlashRecorder.swf", setupTests);
 });
