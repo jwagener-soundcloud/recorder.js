@@ -41,6 +41,7 @@ package
 			ExternalInterface.addCallback("showFlash",      this.showFlash);
 			ExternalInterface.addCallback("recordingDuration",     this.recordingDuration);
 			triggerEvent("initialized", {});
+			logger.log("Recorder initialized");
 		}
 
 		
@@ -181,7 +182,6 @@ package
 			microphone.gain = 50;
 			microphone.addEventListener(StatusEvent.STATUS, function statusHandler(e:Event) {
 				logger.log('Microphone Status Change');
-				recordingStartTime = getTimer();
 				if(!microphone.muted && !isRecording){
 					notifyRecordingStarted();
 				}
@@ -202,6 +202,7 @@ package
 				microphoneWasMuted = false;
 				triggerEvent('hideFlash','');
 			}
+			recordingStartTime = getTimer();
 			triggerEvent('recordingStart', {});
 			logger.log('startRecording');
 			isRecording = true;
