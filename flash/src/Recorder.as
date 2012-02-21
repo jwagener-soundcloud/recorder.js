@@ -182,8 +182,12 @@ package
 			microphone.gain = 50;
 			microphone.addEventListener(StatusEvent.STATUS, function statusHandler(e:Event) {
 				logger.log('Microphone Status Change');
-				if(!microphone.muted && !isRecording){
-					notifyRecordingStarted();
+				if(microphone.muted){
+					triggerEvent('recordingCancel','');
+				}else{
+					if(!isRecording){
+						notifyRecordingStarted();
+					}
 				}
 			});
 			

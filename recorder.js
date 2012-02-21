@@ -36,15 +36,20 @@ var Recorder = {
     options = options || {};
     this.clearBindings("recordingStart");
     this.clearBindings("recordingProgress");
+    this.clearBindings("recordingCancel");
 
-    this.bind('recordingStart', function(){
+    hideFlash = function(){
       var flashContainer = Recorder.options.flashContainer;
       flashContainer.style.left = "-9999px";
       flashContainer.style.top  = "-9999px";
-    });
+    }
+
+    this.bind('recordingStart',  hideFlash);
+    this.bind('recordingCancel', hideFlash);
 
     this.bind('recordingStart',    options['start']);
     this.bind('recordingProgress', options['progress']);
+    this.bind('recordingCancel',   options['cancel']);
 
     this.flashInterface().record();
   },
