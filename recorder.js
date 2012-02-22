@@ -17,8 +17,8 @@ var Recorder = {
     if(!options.onFlashSecurity){
       options.onFlashSecurity = function(){
         var flashContainer = Recorder.options.flashContainer;
-        flashContainer.style.left   = (window.innerWidth / 2) - 115 + "px";
-        flashContainer.style.top    = (window.innerHeight / 2) - 70 + "px";
+        flashContainer.style.left   = (window.innerWidth || document.body.offsetWidth / 2) - 115 + "px";
+        flashContainer.style.top    = (window.innerHeight  || document.body.offsetHeight / 2) - 70 + "px";
       }
     }
 
