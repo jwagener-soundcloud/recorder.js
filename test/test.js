@@ -17,6 +17,32 @@ function setupTests(){
     ok(fi.debugLog          != undefined, "debugLog()");
     ok(fi.recordingDuration != undefined, "recordingDuration()");
   });
+
+
+  function recordForSeconds(ms, callback){
+    Recorder.record({
+      start: function(){
+        window.setTimeout(function(){
+          callback()
+        }, ms)
+      },
+      progress: function(ms){
+        progressCalled = true;
+      }
+    });
+  }
+
+  asyncTest("Audio start, stop, progress", 1, function(){
+    var progressCalled = false;
+    recordForSeconds(2000, function(){
+      Recorder.stop()
+      recordForSeconds(2000, function(){
+        var duration = Recorder.stop();
+        equals(duration < 2001, true);
+        start();
+      });
+    })
+  });
 }
 
 $(function(){
