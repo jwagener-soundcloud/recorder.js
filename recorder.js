@@ -2,6 +2,7 @@ var Recorder = {
   swfObject: null,
   _callbacks: {},
   _events: {},
+  _initialized: false,
   options: {},
   initialize: function(options){
     options = options || {};
@@ -21,14 +22,23 @@ var Recorder = {
       }
     }
 
-    this.bind('initialized', options.initialized);
+    this.bind('initialized', function(){
+      Recorder._initialized = true;
+      options.initialized()
+    });
+
     this.bind('showFlash', options.onFlashSecurity);
 
     flashElement = document.createElement("div");
     flashElement.setAttribute("id", "recorderFlashObject");
     options.flashContainer.appendChild(flashElement);
     swfobject.embedSWF(options.swfSrc, "recorderFlashObject", "231", "141", "10.0.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
-      Recorder.swfObject = e.ref;
+      if(e.success){
+        Recorder.swfObject = e.ref;
+        Recorder._checkForFlashBlock();
+      }else{
+        Recorder._showFlashRequiredDialog();
+      }
     });
   },
 
@@ -124,6 +134,22 @@ var Recorder = {
     }else if(this.swfObject.children[3].record){
       return this.swfObject.children[3];
     }
+  },
+
+  _checkForFlashBlock: function(){
+    window.setTimeout(function(){
+      if(!Recorder._initialized){
+        Recorder.triggerEvent("showFlash");
+      }
+    }, 500);
+  },
+
+  _showFlashRequiredDialog: function(){
+    Recorder.options.flashContainer.innerHTML = "<p>Adobe Flash Player 10.1 or newer is required to use this feature.</p><p><a href='http://get.adobe.com/flashplayer'>Get it on Adobe.com.</a></p>";
+    Recorder.options.flashContainer.style.color = "white";
+    Recorder.options.flashContainer.style.backgroundColor = "#777";
+    Recorder.options.flashContainer.style.textAlign = "center";
+    Recorder.triggerEvent("showFlash");
   },
 
   _externalInterfaceDecode: function(data){
