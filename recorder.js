@@ -145,7 +145,7 @@ var Recorder = {
   },
 
   _showFlashRequiredDialog: function(){
-    Recorder.options.flashContainer.innerHTML = "<p>Adobe Flash Player 10.1 or newer is required to use this feature.</p><p><a href='http://get.adobe.com/flashplayer'>Get it on Adobe.com.</a></p>";
+    Recorder.options.flashContainer.innerHTML = "<p>Adobe Flash Player 10.1 or newer is required to use this feature.</p><p><a href='http://get.adobe.com/flashplayer' target='_top'>Get it on Adobe.com.</a></p>";
     Recorder.options.flashContainer.style.color = "white";
     Recorder.options.flashContainer.style.backgroundColor = "#777";
     Recorder.options.flashContainer.style.textAlign = "center";

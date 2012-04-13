@@ -1,7 +1,6 @@
 package  
 {
 	import com.adobe.audio.format.WAVWriter;
-	import com.adobe.serialization.json.JSON;
 	import flash.events.TimerEvent;
 	import flash.events.Event;
 	import flash.events.ErrorEvent;
