@@ -1,6 +1,14 @@
 package {
+  import flash.events.Event;
+  import flash.events.IOErrorEvent;
+  import flash.events.SecurityErrorEvent;
   import flash.display.Sprite;
   import flash.external.ExternalInterface;
+  import flash.system.Security;
+  import flash.net.URLRequest;
+  import flash.net.URLRequestHeader;
+  import flash.net.URLLoader;
+  import flash.net.URLLoaderDataFormat;
 
   public class SoundcloudRecorder extends Sprite {
     var logger:Logger;
