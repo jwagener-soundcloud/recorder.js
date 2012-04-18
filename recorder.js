@@ -5,21 +5,10 @@ var Recorder = {
   _initialized: false,
   options: {},
   initialize: function(options){
-    options = options || {};
-    this.options = options;
-    if(!options.flashContainer){
-      options.flashContainer = document.createElement("div");
-      options.flashContainer.setAttribute("id", "recorderFlashContainer");
-      options.flashContainer.setAttribute("style", "position: fixed; left: -9999px; top: -9999px; width: 230px; height: 140px; margin-left: 10px; border-top: 6px solid rgba(128, 128, 128, 0.6); border-bottom: 6px solid rgba(128, 128, 128, 0.6); border-radius: 5px 5px; padding-bottom: 1px; padding-right: 1px;");
-      document.body.appendChild(options.flashContainer);
-    }
+    this.options = options || {};
 
-    if(!options.onFlashSecurity){
-      options.onFlashSecurity = function(){
-        var flashContainer = Recorder.options.flashContainer;
-        flashContainer.style.left   = ((window.innerWidth  || document.body.offsetWidth)  / 2) - 115 + "px";
-        flashContainer.style.top    = ((window.innerHeight || document.body.offsetHeight) / 2) - 70  + "px";
-      }
+    if(!this.options.flashContainer){
+      this._setupFlashContainer();
     }
 
     this.bind('initialized', function(){
@@ -27,19 +16,8 @@ var Recorder = {
       options.initialized()
     });
 
-    this.bind('showFlash', options.onFlashSecurity);
-
-    flashElement = document.createElement("div");
-    flashElement.setAttribute("id", "recorderFlashObject");
-    options.flashContainer.appendChild(flashElement);
-    swfobject.embedSWF(options.swfSrc, "recorderFlashObject", "231", "141", "10.0.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
-      if(e.success){
-        Recorder.swfObject = e.ref;
-        Recorder._checkForFlashBlock();
-      }else{
-        Recorder._showFlashRequiredDialog();
-      }
-    });
+    this.bind('showFlash', this.options.onFlashSecurity || this._defaultOnShowFlash);
+    this._loadFlash();
   },
 
   clear: function(){
@@ -52,15 +30,8 @@ var Recorder = {
     this.clearBindings("recordingProgress");
     this.clearBindings("recordingCancel");
 
-    hideFlash = function(){
-      var flashContainer = Recorder.options.flashContainer;
-      flashContainer.style.left = "-9999px";
-      flashContainer.style.top  = "-9999px";
-    }
-
-    this.bind('recordingStart',  hideFlash);
-    this.bind('recordingCancel', hideFlash);
-
+    this.bind('recordingStart',  this._defaultOnHideFlash);
+    this.bind('recordingCancel', this._defaultOnHideFlash);
     this.bind('recordingStart',    options['start']);
     this.bind('recordingProgress', options['progress']);
     this.bind('recordingCancel',   options['cancel']);
@@ -111,6 +82,8 @@ var Recorder = {
   },
   
   triggerEvent: function(eventName, arg0, arg1){
+            console.log(arguments)
+
     for(var cb in Recorder._events[eventName]){
       Recorder._events[eventName][cb](arg0, arg1);
     }
@@ -134,6 +107,39 @@ var Recorder = {
     }else if(this.swfObject.children[3].record){
       return this.swfObject.children[3];
     }
+  },
+
+  _setupFlashContainer: function(){
+    this.options.flashContainer = document.createElement("div");
+    this.options.flashContainer.setAttribute("id", "recorderFlashContainer");
+    this.options.flashContainer.setAttribute("style", "position: fixed; left: -9999px; top: -9999px; width: 230px; height: 140px; margin-left: 10px; border-top: 6px solid rgba(128, 128, 128, 0.6); border-bottom: 6px solid rgba(128, 128, 128, 0.6); border-radius: 5px 5px; padding-bottom: 1px; padding-right: 1px;");
+    document.body.appendChild(this.options.flashContainer);
+  },
+
+  _loadFlash: function(){
+    flashElement = document.createElement("div");
+    flashElement.setAttribute("id", "recorderFlashObject");
+    this.options.flashContainer.appendChild(flashElement);
+    swfobject.embedSWF(this.options.swfSrc, "recorderFlashObject", "231", "141", "10.0.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
+      if(e.success){
+        Recorder.swfObject = e.ref;
+        Recorder._checkForFlashBlock();
+      }else{
+        Recorder._showFlashRequiredDialog();
+      }
+    });
+  },
+
+  _defaultOnShowFlash: function(){
+    var flashContainer = Recorder.options.flashContainer;
+    flashContainer.style.left   = ((window.innerWidth  || document.body.offsetWidth)  / 2) - 115 + "px";
+    flashContainer.style.top    = ((window.innerHeight || document.body.offsetHeight) / 2) - 70  + "px";
+  },
+
+  _defaultOnHideFlash: function(){
+    var flashContainer = Recorder.options.flashContainer;
+    flashContainer.style.left = "-9999px";
+    flashContainer.style.top  = "-9999px";
   },
 
   _checkForFlashBlock: function(){
