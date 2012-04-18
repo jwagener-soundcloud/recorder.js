@@ -32,6 +32,9 @@ var Recorder = {
 
     this.bind('recordingStart',  this._defaultOnHideFlash);
     this.bind('recordingCancel', this._defaultOnHideFlash);
+    // reload flash to allow mic permission dialog to show again
+    this.bind('recordingCancel', this._loadFlash);
+
     this.bind('recordingStart',    options['start']);
     this.bind('recordingProgress', options['progress']);
     this.bind('recordingCancel',   options['cancel']);
@@ -124,8 +127,16 @@ var Recorder = {
     document.body.appendChild(this.options.flashContainer);
   },
 
+  _clearFlash: function(){
+    var flashElement = this.options.flashContainer.children[0];
+    if(flashElement){
+      this.options.flashContainer.removeChild(flashElement);
+    }
+  },
+
   _loadFlash: function(){
-    flashElement = document.createElement("div");
+    this._clearFlash();
+    var flashElement = document.createElement("div");
     flashElement.setAttribute("id", "recorderFlashObject");
     this.options.flashContainer.appendChild(flashElement);
     swfobject.embedSWF(this.options.swfSrc, "recorderFlashObject", "231", "141", "10.0.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
