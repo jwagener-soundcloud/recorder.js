@@ -82,15 +82,19 @@ var Recorder = {
   },
   
   triggerEvent: function(eventName, arg0, arg1){
-            console.log(arguments)
-
-    for(var cb in Recorder._events[eventName]){
-      Recorder._events[eventName][cb](arg0, arg1);
-    }
+    Recorder._executeInWindowContext(function(){
+      for(var cb in Recorder._events[eventName]){
+        if(Recorder._events[eventName][cb]){
+          Recorder._events[eventName][cb].apply(Recorder, [arg0, arg1]);
+        }
+      }
+    });
   },
 
   triggerCallback: function(name, args){
-    Recorder._callbacks[name].apply(null, args);
+    Recorder._executeInWindowContext(function(){
+      Recorder._callbacks[name].apply(null, args);
+    });
   },
 
   registerCallback: function(fn){
@@ -107,6 +111,10 @@ var Recorder = {
     }else if(this.swfObject.children[3].record){
       return this.swfObject.children[3];
     }
+  },
+
+  _executeInWindowContext: function(fn){
+    window.setTimeout(fn, 1);
   },
 
   _setupFlashContainer: function(){
