@@ -60,11 +60,15 @@ package
 			if(!microphone){ 
 				setupMicrophone();
 			}
-			
-			if(!microphone.muted){
+
+			microphoneWasMuted = microphone.muted;
+			if(microphoneWasMuted){
+				logger.log('showFlashRequired');
+				triggerEvent('showFlash','');
+			}else{
 				notifyRecordingStarted();
-			}			
-			
+			}
+
 			buffer = new ByteArray();
 			microphone.addEventListener(SampleDataEvent.SAMPLE_DATA, recordSampleDataHandler);
 		}
@@ -189,13 +193,7 @@ package
 					}
 				}
 			});
-			
-			microphoneWasMuted = microphone.muted;
-			if(microphoneWasMuted){
-				logger.log('showFlashRequired');
-				triggerEvent('showFlash','');
-			} 
-			
+
 			logger.log('setupMicrophone done: ' + microphone.name + ' ' + microphone.muted);
 		}
 		
