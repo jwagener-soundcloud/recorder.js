@@ -46,5 +46,5 @@ function setupTests(){
 }
 
 $(function(){
-  setupRecorder("../flash/bin-release/FlashRecorder.swf", setupTests);
+  setupRecorder("../recorder.swf", setupTests);
 });
