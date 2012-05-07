@@ -139,7 +139,7 @@ var Recorder = {
     var flashElement = document.createElement("div");
     flashElement.setAttribute("id", "recorderFlashObject");
     this.options.flashContainer.appendChild(flashElement);
-    swfobject.embedSWF(this.options.swfSrc, "recorderFlashObject", "231", "141", "10.0.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
+    swfobject.embedSWF(this.options.swfSrc, "recorderFlashObject", "231", "141", "10.1.0", undefined, undefined, {allowscriptaccess: "always"}, undefined, function(e){
       if(e.success){
         Recorder.swfObject = e.ref;
         Recorder._checkForFlashBlock();
