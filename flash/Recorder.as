@@ -39,7 +39,8 @@ package
 			ExternalInterface.addCallback("audioData",      this.audioData);
 			ExternalInterface.addCallback("showFlash",      this.showFlash);
 			ExternalInterface.addCallback("recordingDuration",     this.recordingDuration);
-			triggerEvent("initialized", {});
+      ExternalInterface.addCallback("setActiveBuffer",       this.setActiveBuffer);
+	 		triggerEvent("initialized", {});
 			logger.log("Recorder initialized");
 		}
 
@@ -50,10 +51,22 @@ package
 		protected var playingProgressTimer:Timer;
 		protected var microphone:Microphone;
 		protected var buffer:ByteArray;
+    protected var buffers:Array = [new ByteArray()];
 		protected var sound:Sound;
 		protected var channel:SoundChannel;
 		protected var recordingStartTime = 0;
 		protected static var sampleRate = 44.1;
+    protected var buffer_ind:int = 0;
+
+    protected function setActiveBuffer(index:int):int {
+      if(buffer_ind == index) { return -1; }
+
+      buffer_ind = index;
+      if(!buffers[index]) {
+        buffers[index] = new ByteArray();
+      }
+      return index;
+    }
 		
 		protected function record():void
 		{
@@ -69,7 +82,7 @@ package
 				notifyRecordingStarted();
 			}
 
-			buffer = new ByteArray();
+      buffers[buffer_ind] = new ByteArray();
 			microphone.addEventListener(SampleDataEvent.SAMPLE_DATA, recordSampleDataHandler);
 		}
 		
@@ -87,7 +100,7 @@ package
 			logger.log('startPlaying');
 			isPlaying = true;
 			triggerEvent('playingStart', {});
-			buffer.position = 0;
+      buffers[buffer_ind].position = 0;
 			sound = new Sound();
 			sound.addEventListener(SampleDataEvent.SAMPLE_DATA, playSampleDataHandler);
 			
@@ -129,7 +142,7 @@ package
 		protected function upload(uri:String, audioParam:String, parameters): void
 		{
 			logger.log("upload");
-			buffer.position = 0;
+      buffers[buffer_ind].position = 0;
 			var wav:ByteArray = prepareWav();					
 			var ml:MultipartURLLoader = new MultipartURLLoader();
 			ml.addEventListener(Event.COMPLETE, onReady);
@@ -161,10 +174,10 @@ package
 		protected function audioData():String
 		{
 			var ret:String="";
-			buffer.position = 0;				
-			while (buffer.bytesAvailable > 0) 
+      buffers[buffer_ind].position = 0;
+			while (buffers[buffer_ind].bytesAvailable > 0)
 			{
-				ret += buffer.readFloat().toString() + ";";
+				ret += buffers[buffer_ind].readFloat().toString() + ";";
 			}
 			return ret;
 		}
@@ -214,12 +227,12 @@ package
 		protected function prepareWav():ByteArray
 		{
 			var wavData:ByteArray = new ByteArray();
-			var wavWriter:WAVWriter = new WAVWriter(); 
-			buffer.position = 0;
+			var wavWriter:WAVWriter = new WAVWriter();
+      buffers[buffer_ind].position = 0;
 			wavWriter.numOfChannels = 1; // set the inital properties of the Wave Writer 
 			wavWriter.sampleBitRate = 16; 
 			wavWriter.samplingRate = sampleRate * 1000;
-			wavWriter.processSamples(wavData, buffer, sampleRate * 1000, 1);
+			wavWriter.processSamples(wavData, buffers[buffer_ind], sampleRate * 1000, 1);
 			return wavData;
 		}
 		
@@ -236,8 +249,8 @@ package
 			{	
 				var sample:Number = event.data.readFloat();
 				
-				buffer.writeFloat(sample);
-				if(buffer.length % 40000 == 0){
+				buffers[buffer_ind].writeFloat(sample);
+				if(buffers[buffer_ind].length % 40000 == 0){
 					triggerEvent('recordingProgress', recordingDuration(), 	microphone.activityLevel);
 				}	
 			}
@@ -245,9 +258,9 @@ package
 		
 		protected function playSampleDataHandler(event:SampleDataEvent):void
 		{				
-			for (var i:int = 0; i < 8192 && buffer.bytesAvailable; i++)
+			for (var i:int = 0; i < 8192 && buffers[buffer_ind].bytesAvailable; i++)
 			{
-				var sample:Number = buffer.readFloat();
+				var sample:Number = buffers[buffer_ind].readFloat();
 				event.data.writeFloat(sample); 
 				event.data.writeFloat(sample);  
 			}
