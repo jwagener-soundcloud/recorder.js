@@ -7,6 +7,10 @@ var Recorder = {
   initialize: function(options){
     this.options = options || {};
 
+    if(window.location.protocol === "file:"){
+      throw new Error("Due to Adobe Flash restrictions it is not possible to use the Recorder through the file:// protocol. Please use an http server.")
+    }
+
     if(!this.options.flashContainer){
       this._setupFlashContainer();
     }
