@@ -1,31 +1,32 @@
-# Recorder JS #
-## Introduction ##
-Recorder JS is a JavaScript API to record audio in the browser.
+# Recorder.js
+## Introduction
 
+Recorder.js is a JavaScript library to simply record audio in the browser.
 Currently the recording functionality is backed by Adobe Flash but will extended to open standards as soon as they are being adopted.
-Have a look at RecButton.com as well. It's a widget to add recording to SoundCloud functionality to your website in a very simple way.
 
-## Getting started ##
-  * Copy the 2 files somewhere into your website directory
+## Getting started
+
+  * Copy these 2 files somewhere into your website directory:
     * recorder.js
     * recorder.swf
   * Add the script to your HTML: ```<script type="text/javascript" src="path/to/recorder.swf"></script>```
-  * This will define the global ``Recorder`` object.
-  * Have a look at the examples and the API doc.
+  * Use the ``Recorder`` object to ``initialize`` and ``record`` (see usage... :)
 
-## Examples ##
-  * [basic example](http://dl.dropbox.com/u/12477597/Permanent/recorder.js/examples/example-1.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-1.html)
-  * [upload to soundcloud example](http://dl.dropbox.com/u/12477597/Permanent/recorder.js/examples/example-2.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-2.html)
+## Examples
 
-## API ##
-### ``Recorder.initialize()`` ###
+  * [basic example](http://recorderjs.ponyho.st/examples/example-1.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-1.html)
+  * [upload to soundcloud example](http://recorderjs.ponyho.st/examples/example-2.html) [src](https://github.com/jwagener/recorder.js/blob/master/examples/example-2.html)
+
+## Usage
+### ``Recorder.initialize()``
 
 The Recorder needs to be initialized. Usage:
 
       Recorder.initialize({
-        swfSrc: "/recorder.swf"                                   // URL to recorder.swf
+        swfSrc: "./recorder.swf"                                  // URL to recorder.swf
+        // optional:
         flashContainer: document.getElementById("somecontainer"), // (optional) element where recorder.swf will be placed (needs to be 230x140 px)
-        onFlashSecurity: function(){                            // (optional) callback when the flash swf needs to be visible
+        onFlashSecurity: function(){                              // (optional) callback when the flash swf needs to be visible
                                                                   // this allows you to hide/show the flashContainer element on demand.
         },
       });
@@ -33,7 +34,7 @@ The Recorder needs to be initialized. Usage:
 If flashContainer and onFlashSecurity is not passed as options an invisible ``DIV`` element including the Recorder.swf will be
 inserted at the end of the ``BODY`` and will be displayed centered in the screen when necessary.
 
-### Recorder.record(options) ###
+### Recorder.record(options)
 
 Will start recording audio until ``Recorder.stop()`` is called.
 Adobe Flash will ask the user for permission to access the microphone unless it was already given before.
@@ -51,7 +52,7 @@ Usage:
         },
       });
 
-### Recorder.play(options) ###
+### Recorder.play(options)
 
 Will play the recorded audio. Usage:
 
@@ -64,11 +65,11 @@ Will play the recorded audio. Usage:
         }
       })
 
-### Recorder.stop() ###
+### Recorder.stop()
 
 Will stop the current recording or playing.
 
-### Recorder.upload() ###
+### Recorder.upload()
 
 Will initiate a multipart POST (or PUT) to upload the recorded audio. Usage:
 
