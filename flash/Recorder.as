@@ -180,6 +180,7 @@ package
 		{
 			logger.log('setupMicrophone');
 			microphone = Microphone.getMicrophone();
+			microphone.codec = "Nellymoser";
 			microphone.setSilenceLevel(0);
 			microphone.rate = sampleRate;
 			microphone.gain = 50;
