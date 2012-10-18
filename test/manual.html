@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen" />
+  <style>
+    textarea {
+      width: 99.5%;
+      height: 300px;
+    }
+    button {
+      display: inline-block;
+    }
+  </style>
+  <script src="qunit/jquery.min.js"></script>
+  <script src="../recorder.js"></script>
+
+  <script>
+  log = function(message){
+    var val = $("#debug").val();
+    $("#debug").val([val, message].join("\n"));
+    $("#debug")[0].scrollTop = 99999999;
+  }
+  $(function(){
+    log("Calling Recorder.initialize()");
+    Recorder.initialize({
+      "swfSrc": "../recorder.swf?" + Math.random(),
+      initialized: function(){
+        log("Initialized!");
+      }
+    });  
+
+    $("#record").on("click", function(){
+      log("Calling Recorder.record()");
+      Recorder.record({
+        start: function(){
+          log("Recording...");
+        },
+        progress: function(ms){
+          log("Record progressed: " + ms + "ms");
+        }
+      });
+    });
+    $("#stop").on("click", function(){
+      log("Calling Recorder.stop()");
+      Recorder.stop()
+    });
+    $("#play").on("click", function(){
+      log("Calling Recorder.play()");
+      Recorder.play({
+        progress: function(ms){
+          log("Play progressed: " + ms + "ms");
+        }
+      });
+    });
+
+    $("#upload").on("click", function(){
+      log("Calling Recorder.upload()");
+      Recorder.upload({
+        method: "POST",
+        url: "http://typewriter.tw/a" + Math.random(),
+        audioParam: "data",
+        params: {
+          "_method": "PUT"
+        },
+        success: function(responseText){
+          log("Uploaded\n");
+          window.res = responseText;
+        },
+      });
+    });
+
+    $("#getDebugLog").on("click", function(){
+      log(" === Flash Debug Log === \n" + Recorder.flashInterface().debugLog().join("\n") + " === End Debug Log === \n");
+    });
+  });
+  </script>
+  </head>
+  <body>
+    <h1 id="qunit-header">Recorder.js Manual Test</h1>
+    <div id="content">
+    <textarea id="debug" readonly="readonly">Debugging Log</textarea><br/>
+    <button id="record">Record</button>
+    <button id="stop">Stop</button>
+    <button id="play">Play</button>
+    <button id="upload">Upload</button>
+
+    <button id="getDebugLog">Get Debug Log</button>
+    </div>
+  </body>  
+</html>
