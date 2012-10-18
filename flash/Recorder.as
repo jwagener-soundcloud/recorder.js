@@ -245,13 +245,26 @@ package
 		}
 		
 		protected function playSampleDataHandler(event:SampleDataEvent):void
-		{				
-			for (var i:int = 0; i < 8192 && buffer.bytesAvailable; i++)
+		{
+			var expectedSampleRate = 44.1;
+			var writtenSamples = 0;
+			var channels = 2;
+			var maxSamples = 8192 * channels;
+			// if the sampleRate doesn't match the expectedSampleRate of flash.media.Sound (44.1) write the sample multiple times
+			// this will result in a little down pitchshift.
+			// also write 2 times for stereo channels
+			while(writtenSamples < maxSamples && buffer.bytesAvailable)
 			{
 				var sample:Number = buffer.readFloat();
-				event.data.writeFloat(sample); 
-				event.data.writeFloat(sample);  
+			  for (var j:int = 0; j < channels * (expectedSampleRate / sampleRate); j++){
+					event.data.writeFloat(sample);
+					writtenSamples++;
+					if(writtenSamples >= maxSamples){
+						break;
+					}
+				}
 			}
+			logger.log("Wrote " + writtenSamples + " samples");
 		}
 		
 		/* ExternalInterface Communication */
