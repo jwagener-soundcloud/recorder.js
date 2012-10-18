@@ -1,5 +1,5 @@
 var Recorder = {
-  version: 1.1,
+  version: 1.11,
   swfObject: null,
   _callbacks: {},
   _events: {},
