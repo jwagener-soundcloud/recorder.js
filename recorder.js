@@ -18,7 +18,9 @@ var Recorder = {
 
     this.bind('initialized', function(){
       Recorder._initialized = true;
-      options.initialized()
+      if(options.initialized){
+        options.initialized()
+      }
     });
 
     this.bind('showFlash', this.options.onFlashSecurity || this._defaultOnShowFlash);
