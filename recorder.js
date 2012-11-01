@@ -73,8 +73,20 @@ var Recorder = {
     this.flashInterface().upload(options.url, options.audioParam, options.params);
   },
   
-  audioData: function(){
-    return this.flashInterface().audioData().split(";");
+  audioData: function(newData){
+    var delimiter = ";", newDataSerialized, stringData, data = [], sample;
+    if(newData){
+      newDataSerialized = newData.join(";");
+    }
+    console.log(newDataSerialized)
+    stringData = this.flashInterface().audioData(newDataSerialized).split(delimiter);
+    for(var i=0; i < stringData.length; i ++){
+      sample = parseFloat(stringData[i]);
+      if(!isNaN(sample)){
+        data.push(sample);
+      }
+    }
+    return data;
   },
 
   request: function(method, uri, contentType, data, callback){

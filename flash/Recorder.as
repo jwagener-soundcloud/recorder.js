@@ -49,7 +49,7 @@ package
 		protected var microphoneWasMuted:Boolean;
 		protected var playingProgressTimer:Timer;
 		protected var microphone:Microphone;
-		protected var buffer:ByteArray;
+		protected var buffer:ByteArray = new ByteArray();
 		protected var sound:Sound;
 		protected var channel:SoundChannel;
 		protected var recordingStartTime = 0;
@@ -158,15 +158,25 @@ package
 			return data.split("%").join("%25").split("\\").join("%5c").split("\"").join("%22").split("&").join("%26");
 		}
 		
-		protected function audioData():String
+		protected function audioData(newData:String=null):String
 		{
-			var ret:String="";
-			buffer.position = 0;				
-			while (buffer.bytesAvailable > 0) 
-			{
-				ret += buffer.readFloat().toString() + ";";
+			var delimiter = ";"
+			if(newData){
+				buffer = new ByteArray();
+				var splittedData = newData.split(delimiter);
+				for(var i=0; i < splittedData.length; i++){
+					buffer.writeFloat(parseFloat(splittedData[i]));
+				}
+				return "";
+			}else{
+				var ret:String="";
+				buffer.position = 0;
+				while (buffer.bytesAvailable > 0)
+				{
+					ret += buffer.readFloat().toString() + delimiter;
+				}
+				return ret;
 			}
-			return ret;
 		}
 		
 		protected function showFlash():void
