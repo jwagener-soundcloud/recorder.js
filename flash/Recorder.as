@@ -39,6 +39,8 @@ package
 			ExternalInterface.addCallback("audioData",      this.audioData);
 			ExternalInterface.addCallback("showFlash",      this.showFlash);
 			ExternalInterface.addCallback("recordingDuration",     this.recordingDuration);
+			ExternalInterface.addCallback("playDuration",     this.playDuration);
+
 			triggerEvent("initialized", {});
 			logger.log("Recorder initialized");
 		}
@@ -101,7 +103,7 @@ package
 			}
 			playingProgressTimer = new Timer(250);
 			playingProgressTimer.addEventListener(TimerEvent.TIMER, function playingProgressTimerHandler(event:TimerEvent){
-				triggerEvent('playingProgress', int(channel.position));
+				triggerEvent('playingProgress', this.platDuration());
 			});
 			playingProgressTimer.start();
 		}
@@ -236,9 +238,13 @@ package
 		
 		protected function recordingDuration():int
 		{
-			var latency = 650;
-			var duration = int(getTimer() - recordingStartTime - latency);
+			var duration = int(getTimer() - recordingStartTime);
 			return Math.max(duration, 0);
+		}
+
+		protected function playDuration():int
+		{
+			return int(channel.position);
 		}
 		
 		protected function recordSampleDataHandler(event:SampleDataEvent):void
