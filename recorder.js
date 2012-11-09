@@ -4,6 +4,7 @@ var Recorder = {
   _callbacks: {},
   _events: {},
   _initialized: false,
+  _flashBlockCatched: false,
   options: {},
   initialize: function(options){
     this.options = options || {};
@@ -18,6 +19,9 @@ var Recorder = {
 
     this.bind('initialized', function(){
       Recorder._initialized = true;
+      if(Recorder._flashBlockCatched){
+        Recorder._defaultOnHideFlash();
+      }
       if(options.initialized){
         options.initialized()
       }
@@ -183,6 +187,7 @@ var Recorder = {
   _checkForFlashBlock: function(){
     window.setTimeout(function(){
       if(!Recorder._initialized){
+        Recorder._flashBlockCatched = true;
         Recorder.triggerEvent("showFlash");
       }
     }, 500);
