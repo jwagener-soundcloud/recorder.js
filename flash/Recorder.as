@@ -103,7 +103,7 @@ package
 			}
 			playingProgressTimer = new Timer(250);
 			playingProgressTimer.addEventListener(TimerEvent.TIMER, function playingProgressTimerHandler(event:TimerEvent){
-				triggerEvent('playingProgress', this.platDuration());
+				triggerEvent('playingProgress', this.playDuration());
 			});
 			playingProgressTimer.start();
 		}
