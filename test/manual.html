@@ -57,7 +57,7 @@
       log("Calling Recorder.upload()");
       Recorder.upload({
         method: "POST",
-        url: "http://typewriter.tw/a" + Math.random(),
+        url: "http://typewriter.tw/a" + Math.random() * 100000,
         audioParam: "data",
         params: {
           "_method": "PUT"
