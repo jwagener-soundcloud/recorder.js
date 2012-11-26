@@ -102,8 +102,9 @@ package
 				playingProgressTimer.reset();
 			}
 			playingProgressTimer = new Timer(250);
+			var that = this;
 			playingProgressTimer.addEventListener(TimerEvent.TIMER, function playingProgressTimerHandler(event:TimerEvent){
-				triggerEvent('playingProgress', this.playDuration());
+				triggerEvent('playingProgress', that.playDuration());
 			});
 			playingProgressTimer.start();
 		}
