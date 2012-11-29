@@ -108,9 +108,12 @@ var Recorder = {
   
   triggerEvent: function(eventName, arg0, arg1){
     Recorder._executeInWindowContext(function(){
-      for(var cb in Recorder._events[eventName]){
-        if(Recorder._events[eventName][cb]){
-          Recorder._events[eventName][cb].apply(Recorder, [arg0, arg1]);
+      if (!Recorder._events[eventName]) {
+        return;
+      }
+      for(var i = 0, len = Recorder._events[eventName].length; i < len; i++){
+        if(Recorder._events[eventName][i]){
+          Recorder._events[eventName][i].apply(Recorder, [arg0, arg1]);
         }
       }
     });
