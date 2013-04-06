@@ -5,8 +5,8 @@ package
 	import flash.events.Event;
 	import flash.events.ErrorEvent;
 	import flash.events.HTTPStatusEvent;
-    import flash.events.IOErrorEvent;
-    import flash.events.ProgressEvent;
+  import flash.events.IOErrorEvent;
+  import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.SampleDataEvent;
 	import flash.external.ExternalInterface;
@@ -48,7 +48,6 @@ package
 			triggerEvent("initialized", {});
 			logger.log("Recorder initialized");
 		}
-
 
 		protected var isRecording:Boolean = false;
 		protected var isPlaying:Boolean = false;
