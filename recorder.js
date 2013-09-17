@@ -60,6 +60,7 @@ var Recorder = {
   play: function(options){
     options = options || {};
     this.clearBindings("playingProgress");
+    this.clearBindings("playingStop");
     this.bind('playingProgress', options['progress']);
     this.bind('playingStop', options['finished']);
     
